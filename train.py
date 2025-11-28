@@ -1,0 +1,22 @@
+import torch
+from torch import optim, nn
+from model import Chain
+
+model = Chain(20)
+
+target = torch.zeros(20)
+target[[0, 3, 7]] = 1
+
+opt = optim.Adam(model.parameters(), lr=0.01)
+loss_fn = nn.MSELoss()
+
+for step in range(300):
+    opt.zero_grad()
+    out = model(train=True, p=0.0)
+    loss = loss_fn(out, target)
+    loss.backward()
+    opt.step()
+    if step % 50 == 0:
+        print(step, loss.item())
+
+torch.save(model.state_dict(), "chain.pt")
