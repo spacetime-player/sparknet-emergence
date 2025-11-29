@@ -6,7 +6,7 @@ import matplotlib.animation as animation
 class Chain(nn.Module):
     def __init__(self, n=250):
         super().__init__()
-        self.W = nn.Parameter(torch.randn(n, n) * 0.15)
+        self.W = nn.Parameter(torch.randn(n, n) * 0.30)
         self.n = n
 
     def forward(self, s):
@@ -23,6 +23,7 @@ class Chain(nn.Module):
         self.W.data -= decay * self.W.data
         self.W.data = torch.clamp(self.W.data, -1, 1)
 
+
 # ===================== experiment ============================
 
 model = Chain(250)
@@ -35,8 +36,9 @@ steps = 10000
 spark_count = 0
 total_sparks = 0
 
-survival_counter = 0      # how long spark has been alive
-forced_survival_steps = 5 # spark must survive minimum 5 steps
+survival_counter = 0
+forced_survival_steps = 5    # spark always lives first 5 steps
+
 
 fig, (ax_a, ax_w) = plt.subplots(1, 2, figsize=(14, 6))
 plt.tight_layout()
@@ -62,23 +64,32 @@ def update(frame):
         s = torch.clamp(s + spark_pre_mask, 0, 1)
         spark_count += 1
         total_sparks += spark_pre_mask.sum().item()
-        survival_counter = 1  # spark starts
+        survival_counter = 1   # spark always begins at 1
 
     pre_mask = spark_pre_mask.clone()
 
     # forward
     s = model(s)
 
+    # activation based propagation
     post_mask = (s > spark_threshold).float()
     propagated = (post_mask.sum() > 0)
 
-    # spark propagation logic
-    if propagated and survival_counter > 0:
-        survival_counter += 1
-    elif survival_counter > 0 and not propagated:
-        survival_counter = 0
+    # survival logic
+    if survival_counter >= 1:
 
-    # only allow STDP if spark survived 6+ steps
+        # forced survival for steps 1–5
+        if survival_counter <= forced_survival_steps:
+            survival_counter += 1
+
+        # step 6+: real propagation check
+        else:
+            if propagated:
+                survival_counter += 1
+            else:
+                survival_counter = 0
+
+    # STDP only from step 6 and above
     if survival_counter > forced_survival_steps:
         model.local_stdp(pre, s, pre_mask, post_mask)
 
@@ -96,6 +107,7 @@ def update(frame):
         ani.event_source.stop()
 
     return bars, heat
+
 
 ani = animation.FuncAnimation(fig, update, interval=40, cache_frame_data=False)
 plt.show()
