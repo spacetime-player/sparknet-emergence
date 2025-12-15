@@ -44,4 +44,4 @@ Understanding self-organization in neural networks - how structure emerges from 
 **Status:** Early-stage. Iterating on memory systems, spark movement strategies, and learning rules.
 
 
-**Honestly my head fried now, interface make experiment more easy to test, but I feel there will be trade offs**
+## Honestly my head fried now, interface make experiment more easy to test, but I feel there will be trade offs
