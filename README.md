@@ -2,6 +2,14 @@
 
 Exploring self-organization and emergent behavior in neural networks.
 
+## Most uptodate version is sparknet_alpha_v1.py
+
+### Latest Updates (v1)
+- **Interactive Parameter Editor**: Real-time editing of model parameters with visual feedback (blinking cursor, color highlighting)
+- **Play/Pause/Stop Controls**: Full simulation control - parameters editable only when paused
+- **Auto GPU/CPU Detection**: Automatically uses GPU if available, falls back to CPU
+- **Parameter Validation**: Prevents invalid configurations (e.g., more sparks than neurons)
+
 ## Current Focus
 - Investigating how architectural constraints influence internal representations
 - Testing variations of recurrent network structures with memory mechanisms
@@ -41,9 +49,9 @@ The 2D graph reveals interesting dynamics: during training, the system behaves l
 So far, no striking emergent structures have appeared, but this fluid-like behavior during collapse to equilibrium is intriguing. It suggests networks might follow entropy laws similar to gases when settling into stable states. Curious to see if more complex systems exhibit similar thermodynamic-like properties.
 
 ## Technical Stack
-- PyTorch with CUDA (RTX 3070)
+- PyTorch with automatic GPU/CPU detection
 - Custom architecture implementations
-- Matplotlib for real-time visualization
+- Matplotlib for real-time visualization with interactive controls
 - Force-directed graph layouts
 
 ## Research Direction
