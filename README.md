@@ -42,3 +42,6 @@ No striking emergent structures yet, but thermodynamic-like behavior is intrigui
 Understanding self-organization in neural networks - how structure emerges from randomness. Long-term aim: contribute to research on emergence, internal representations, and architectural requirements for consciousness in AI systems.
 
 **Status:** Early-stage. Iterating on memory systems, spark movement strategies, and learning rules.
+
+
+**Honestly my head fried now, interface make experiment more easy to test, but I feel there will be trade offs**
