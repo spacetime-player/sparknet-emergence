@@ -15,11 +15,19 @@ python sparknet_alpha.py
 
 Mobile "sparks" traverse a neural network, strengthening connections as they move. A memory field biases future movement toward frequently-visited areas. The system self-organizes through Hebbian-like learning with global decay.
 
+**Recent Updates:**
+
+*Network Behavior:*
+- **Saturation-Aware Movement**: Sparks avoid over-activated neurons (>0.99) to prevent concentration in hot spots. Forces broader exploration and more distributed patterns instead of repeatedly visiting the same high-activity neurons.
+
+*New Visualization:*
+- **Learning Temperature Graph**: Tracks graph motion over time as a "thermometer" for learning activity. High motion = active reorganization, low motion = stable structure. Sudden drops reveal pattern formation moments.
+
 **Features:**
 - Interactive parameter editor with live feedback
 - Play/Pause/Stop controls
 - Auto GPU/CPU detection
-- Real-time visualization: neuron activations, weight matrix, memory field, force-directed graph
+- Real-time visualization: neuron activations, weight matrix, memory field, force-directed graph, learning temperature
 
 ## Repository Structure
 - **sparknet_alpha.py** - Main version with interactive interface

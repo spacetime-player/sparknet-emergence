@@ -49,6 +49,7 @@ GRAPH_UPDATE_FREQ = 5  # Update graph every N steps
 SPARK_ENERGY_DECAY = 0.98
 SPARK_MIN_ENERGY = 0.05
 SPARK_FORCE_STEPS = 5
+SATURATION_THRESHOLD = 0.99  # Avoid neurons with activation above this value
 
 
 # ===================== FORCE-LAYOUT GRAPH =====================
@@ -101,12 +102,19 @@ class SparkNetAlpha(nn.Module):
         self.spark_energy = torch.ones(k, device=self.device)
         self.spark_age = torch.zeros(k, dtype=torch.long, device=self.device)
 
+        # Graph motion tracking - "Learning Temperature"
+        self.prev_graph_pos = None
+        self.motion_history = []
+
     def reset(self):
         self.s.zero_()
         self.M.zero_()
         self.spark_pos = torch.randint(0, self.n, (self.k,), device=self.device)
         self.spark_energy = torch.ones(self.k, device=self.device)
         self.spark_age = torch.zeros(self.k, dtype=torch.long, device=self.device)
+        # Reset motion tracking
+        self.prev_graph_pos = None
+        self.motion_history = []
 
     def update_spark_count(self, new_k):
         """Update the number of sparks and reinitialize"""
@@ -142,6 +150,11 @@ class SparkNetAlpha(nn.Module):
             # KEY INNOVATION: Combine weights with memory bias
             # Higher memory at target locations makes them more attractive
             logits = base_weights / TEMPERATURE + MEM_BIAS * self.M
+
+            # SATURATION AVOIDANCE: Filter out over-activated neurons
+            # This prevents sparks from repeatedly hitting the same hot spots
+            saturation_mask = self.s < SATURATION_THRESHOLD
+            logits = torch.where(saturation_mask, logits, torch.tensor(-1e9, device=self.device))
 
             # Sometimes ignore everything and explore randomly
             if torch.rand(1, device=self.device).item() < EXPLORE_CHANCE:
@@ -205,6 +218,7 @@ PARAM_INFO = {
     'SPARK_ENERGY_DECAY': 'Energy loss per step (0-1). Lower = sparks die faster',
     'SPARK_MIN_ENERGY': 'Energy threshold for respawn. Higher = respawn sooner',
     'SPARK_FORCE_STEPS': 'Steps a new spark forces full activation. Higher = stronger initial pulse',
+    'SATURATION_THRESHOLD': 'Activation level to avoid (0-1). Sparks skip neurons above this to prevent hot spots',
     'LAYOUT_FORCE_STEPS': 'Physics iterations for graph layout. Lower = faster but less stable',
     'LAYOUT_LR': 'Graph layout movement speed. Higher = faster settling but more jittery',
     'GRAPH_UPDATE_FREQ': 'Update graph every N steps. Lower = smoother animation but more CPU load'
@@ -338,13 +352,14 @@ def setup_controls(fig):
         ('SPARK_ENERGY_DECAY', SPARK_ENERGY_DECAY),
         ('SPARK_MIN_ENERGY', SPARK_MIN_ENERGY),
         ('SPARK_FORCE_STEPS', SPARK_FORCE_STEPS),
+        ('SATURATION_THRESHOLD', SATURATION_THRESHOLD),
         ('LAYOUT_FORCE_STEPS', LAYOUT_FORCE_STEPS),
         ('LAYOUT_LR', LAYOUT_LR),
         ('GRAPH_UPDATE_FREQ', GRAPH_UPDATE_FREQ),
     ]
 
     y_start = 0.88
-    y_step = 0.048  # Compact spacing
+    y_step = 0.017  # Compact with slight spacing
     controls['params'] = {}
     controls['info_boxes'] = {}
     controls['input_boxes'] = {}
@@ -353,13 +368,13 @@ def setup_controls(fig):
         y_pos = y_start - i * y_step
 
         # Parameter label (shorter)
-        ax_label = fig.add_axes([0.65, y_pos, 0.12, 0.025])
+        ax_label = fig.add_axes([0.65, y_pos, 0.12, 0.015])
         ax_label.text(0, 0.5, param_name, ha='left', va='center',
                       color='white', fontsize=7)
         ax_label.axis('off')
 
-        # Value input box (editable background)
-        ax_value = fig.add_axes([0.78, y_pos, 0.10, 0.025])
+        # Value input box (editable background) - wider for numbers
+        ax_value = fig.add_axes([0.78, y_pos, 0.12, 0.015])
         rect = Rectangle((0, 0), 1, 1, facecolor='#3e3e3e', edgecolor='#666666', linewidth=1)
         ax_value.add_patch(rect)
         value_text = ax_value.text(0.5, 0.5, f'{param_value}', ha='center', va='center',
@@ -371,7 +386,7 @@ def setup_controls(fig):
         controls['input_boxes'][param_name] = ax_value
 
         # Info button (smaller)
-        ax_info = fig.add_axes([0.89, y_pos, 0.015, 0.025])
+        ax_info = fig.add_axes([0.91, y_pos, 0.015, 0.015])
         info_circle = mpatches.Circle((0.5, 0.5), 0.35, facecolor='#2196F3',
                                       edgecolor='white', linewidth=1)
         ax_info.add_patch(info_circle)
@@ -394,6 +409,17 @@ def setup_controls(fig):
     ax_popup.axis('off')
     ax_popup.set_visible(False)
     controls['popup'] = (ax_popup, popup_text)
+
+    # Motion plot (aligned with main visualizations bottom) - "Learning Temperature"
+    ax_motion = fig.add_axes([0.65, 0.23, 0.32, 0.15])
+    ax_motion.set_facecolor('#1e1e1e')
+    ax_motion.set_title('Graph Motion (Learning Temperature)', color='white', fontsize=9)
+    ax_motion.set_xlabel('Step', color='white', fontsize=8)
+    ax_motion.set_ylabel('Motion', color='white', fontsize=8)
+    ax_motion.tick_params(colors='white', labelsize=7)
+    motion_line, = ax_motion.plot([], [], color='cyan', linewidth=1.5)
+    ax_motion.grid(True, alpha=0.2, color='white')
+    controls['motion'] = (ax_motion, motion_line)
 
     return controls
 
@@ -570,7 +596,7 @@ def apply_parameter_changes(state, controls, net):
     """Apply changed parameters and reset simulation"""
     global TOTAL_STEPS, NUM_SPARKS, STATE_DECAY, NOISE_STD, LR_EDGE, LR_GLOBAL_DECAY
     global MEM_DECAY, MEM_DEPOSIT, MEM_BIAS, EXPLORE_CHANCE, TEMPERATURE
-    global SPARK_ENERGY_DECAY, SPARK_MIN_ENERGY, SPARK_FORCE_STEPS
+    global SPARK_ENERGY_DECAY, SPARK_MIN_ENERGY, SPARK_FORCE_STEPS, SATURATION_THRESHOLD
     global LAYOUT_FORCE_STEPS, LAYOUT_LR, GRAPH_UPDATE_FREQ
 
     changed = False
@@ -619,6 +645,8 @@ def apply_parameter_changes(state, controls, net):
                 SPARK_MIN_ENERGY = new_value
             elif param_name == 'SPARK_FORCE_STEPS':
                 SPARK_FORCE_STEPS = new_value
+            elif param_name == 'SATURATION_THRESHOLD':
+                SATURATION_THRESHOLD = new_value
             elif param_name == 'LAYOUT_FORCE_STEPS':
                 LAYOUT_FORCE_STEPS = new_value
             elif param_name == 'LAYOUT_LR':
@@ -748,6 +776,21 @@ def main():
             # Update graph layout more frequently for visible motion
             if state.step % GRAPH_UPDATE_FREQ == 0:
                 layout = force_layout(net.W, steps=LAYOUT_FORCE_STEPS, lr=LAYOUT_LR)
+
+                # Track motion - "Learning Temperature"
+                if net.prev_graph_pos is not None:
+                    motion = np.sum(np.linalg.norm(layout - net.prev_graph_pos, axis=1))
+                    net.motion_history.append(motion)
+
+                    # Update motion plot
+                    ax_motion, motion_line = controls['motion']
+                    history_window = net.motion_history[-500:]  # Last 500 points
+                    motion_line.set_data(range(len(history_window)), history_window)
+                    ax_motion.relim()
+                    ax_motion.autoscale_view()
+
+                net.prev_graph_pos = layout.copy()
+
                 ax_g.clear()
                 ax_g.scatter(layout[:, 0], layout[:, 1], s=6, c='cyan', alpha=0.7)
                 ax_g.set_title("2D Graph Layout (force physics)", color='white', fontsize=12)
