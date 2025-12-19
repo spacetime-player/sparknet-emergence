@@ -59,10 +59,17 @@ class ContinuousExplorationEnvironment:
         self._init_attractors()
 
     def _init_attractors(self):
-        """Initialize attractor positions randomly in safe zones."""
+        """Initialize attractor positions - first at spawn, others nearby."""
         for i in range(self.num_attractors):
-            # Place attractors away from edges
-            pos = torch.rand(2) * 1.2 - 0.6  # Range [-0.6, 0.6]
+            if i == 0:
+                # SOLUTION 1: First attractor AT spawn to intercept agent immediately
+                pos = torch.tensor([0.0, 0.0])
+            else:
+                # Others in ring around spawn (radius 0.3)
+                angle = (i / self.num_attractors) * 2 * np.pi
+                radius = 0.3
+                pos = torch.tensor([radius * np.cos(angle), radius * np.sin(angle)])
+
             self.attractors.append(pos)
             self.attractor_lifetimes.append(0)
             self.time_in_zone[i] = 0
@@ -106,6 +113,23 @@ class ContinuousExplorationEnvironment:
         # Clip to bounds (hard constraint)
         self.position = torch.clamp(self.position,
                                      self.bounds[0], self.bounds[1])
+
+        # SOLUTION 2: Boundary noise - make corners unpredictable
+        # When near boundaries, add random kicks to break predictability
+        corner_distance = min(
+            abs(self.position[0] - self.bounds[0]),
+            abs(self.position[0] - self.bounds[1]),
+            abs(self.position[1] - self.bounds[0]),
+            abs(self.position[1] - self.bounds[1])
+        )
+        if corner_distance < 0.15:  # Very close to edge
+            # Random kick away from boundary (breaks zero prediction error)
+            noise_strength = (0.15 - corner_distance) / 0.15  # Stronger when closer
+            boundary_noise = torch.randn(2) * 0.2 * noise_strength
+            self.position = self.position + boundary_noise
+            # Re-clip after noise
+            self.position = torch.clamp(self.position,
+                                         self.bounds[0], self.bounds[1])
 
         # 2. Attractor rewards (with satiation)
         attractor_reward = 0.0
@@ -236,9 +260,11 @@ def exploration_task(num_steps=5000, visualize_interval=500):
         'novelty': [],
         'curiosity': [],
         'homeostatic': [],
+        'boredom_penalty': [],
         'total_reward': [],
         'loss': [],
-        'positions': []
+        'positions': [],
+        'exploration_rate': []  # Add exploration rate tracking
     }
 
     print("Starting exploration...")
@@ -292,9 +318,11 @@ def exploration_task(num_steps=5000, visualize_interval=500):
         metrics_history['novelty'].append(metrics['novelty'])
         metrics_history['curiosity'].append(metrics['curiosity'])
         metrics_history['homeostatic'].append(metrics['homeostatic_penalty'])
+        metrics_history['boredom_penalty'].append(metrics['boredom_penalty'])
         metrics_history['total_reward'].append(metrics['total_reward'])
         metrics_history['loss'].append(loss.item())
         metrics_history['positions'].append(position.numpy().copy())
+        metrics_history['exploration_rate'].append(model.exploration_rate)  # Track exploration rate
 
         # Update position for next step
         position = next_position.detach()

@@ -118,25 +118,85 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 
 ---
 
-## Key Learnings So Far
+## Run 7: Triple Corner-Breaking Solutions (2025-12-18 19:58)
+**Config**: Implemented three solutions: (1) Attractors at spawn [0,0], (2) Boundary noise (random kicks near edges), (3) Boredom penalty (curiosity < 0.001 → penalty)
+**Result**: **BREAKTHROUGH - Agent explores entire space!** Visits all four quadrants
+**Observations**:
+- **Agent MOVES** - positions change: [0.3, -0.9] → [-1, 0.2] → [1, 0.8] → [-0.7, 0.9] → [1, -0.7]
+- **No corner convergence** - bounces between edges instead of settling
+- **Diversity stable** - 0.37 → 0.21 (healthy decline, not collapse)
+- **Novelty sustained** - 0.16 → 0.03 (gradual decrease, not dead)
+- **21-22/22 parameters healthy** throughout - system stable while exploring
+- Solutions working together: attractors pull from spawn, noise breaks edge predictability, boredom prevents settling
+
+**Visualizations**:
+
+![Metrics](exploration_runs/exploration_metrics_2025-12-18_20-36-50.png)
+*Reward dynamics showing sustained activity - boredom penalty (orange) prevents collapse*
+
+![State Space](exploration_runs/exploration_state_space_2025-12-18_20-36-50.png)
+*State embedding diversity maintained - no convergence to fixed point*
+
+![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_20-36-50.png)
+*Physical trajectory showing movement across all quadrants - CORNER TRAP BROKEN*
+
+**Data Links**:
+- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_19-58-31.md)
+
+**Major Breakthrough**: Triple defense successfully breaks corner convergence. System now explores continuously instead of settling into stable attractor. Next: optimize parameters to maximize coverage efficiency.
+
+---
+
+## Run 8: Reproducible Emergent Structure (2025-12-18 20:56)
+**Config**: Same triple defense as Run 7 - testing reproducibility with different random seed
+**Result**: Agent explores continuously - **same 4-cluster topology emerges**
+**Observations**:
+- **Reproducible structure** - PCA shows identical 4-cluster pattern as Run 7
+- **Four attractor basins**: bottom-left + top-center + upper-right + lower-right
+- **Not random** - different initialization converges to same state space organization
+- **Diversity stable** - 0.30 → 0.17 (similar pattern to Run 7)
+- **21/22 parameters healthy** - system remains viable throughout
+- Proof of **stable emergent topology** dictated by reward landscape and constraints
+
+**Visualizations**:
+
+![Metrics](exploration_runs/exploration_metrics_2025-12-18_21-36-55.png)
+*Reward dynamics consistent with Run 7 - boredom penalty maintains exploration*
+
+![State Space](exploration_runs/exploration_state_space_2025-12-18_21-36-55.png)
+*Four-cluster pattern identical to Run 7 - reproducible emergent structure in PCA space*
+
+![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_21-36-55.png)
+*Continuous exploration across all quadrants - no corner convergence*
+
+**Data Links**:
+- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_20-56-04.md)
+
+**Discovery**: System discovers **same state space architecture** across runs. Four-cluster topology is not random artifact but **stable emergent organization** created by interaction of spawn attractors (1 center + 3 ring) and boundary dynamics. Network self-organizes into this structure regardless of initialization.
+
+---
+
+## Key Learnings
 
 1. **Boundary penalties alone insufficient** - Agent finds corners attractive despite penalties
-2. **Intrinsic rewards dominate** - Novelty/curiosity keeping agent in corners
-3. **Attractor placement critical** - Must be reachable from spawn point
-4. **Exploration vs exploitation** - Need stronger initial exploration to discover reward landscape
-5. **State embedding paradox** - Internal representations diverse while physical position stuck
-6. **Adaptive correlation breakthrough** - Stress-driven exploration creates reward synergy; internal dynamics can improve independently of spatial behavior
-7. **Corner stability problem** - Corners are stable attractors for network even under stress; need fundamentally different approach to break free
+2. **Attractor placement critical** - Must intercept agent at spawn [0,0] before corners reached
+3. **Predictability kills exploration** - Corners are easy to predict → curiosity dies → no drive to leave
+4. **Multiple mechanisms needed** - Single solution fails; triple defense (attractors + noise + boredom penalty) succeeds
+5. **Adaptive correlation enables cooperation** - Stress-driven exploration creates reward synergy
+6. **Corner trap broken** - Triple defense prevents convergence to stable equilibrium
+7. **Emergent topology reproducible** - System self-organizes into 4-cluster state space architecture across different runs
 
 ## Next Steps
 
-- [x] Implement adaptive survival-exploration correlation (Run 5 - SUCCESS: reward synergy achieved)
-- [x] Add terminal output logging system (Run 5 - SUCCESS: auto-saves to logs/)
-- [ ] Run 20k step experiment to test long-term adaptive dynamics
-- [ ] Place attractors closer to spawn point [0, 0]
-- [ ] Strengthen stress-exploration multiplier (currently 0.5x, try 2-5x)
-- [ ] Add escape mechanism: strong random kick when homeostatic penalty exceeds threshold
-- [ ] Test initial exploration phase before exploitation kicks in
+- [x] Implement adaptive survival-exploration correlation (Run 5 - SUCCESS)
+- [x] Add terminal output logging system (Run 5 - SUCCESS)
+- [x] Test long-term adaptive dynamics (Run 6 - confirmed corner equilibrium)
+- [x] Place attractors at spawn [0,0] (Run 7 - SUCCESS)
+- [x] Add boundary noise mechanism (Run 7 - SUCCESS)
+- [x] Implement boredom penalty (Run 7 - SUCCESS)
+- [ ] Optimize attractor radius and satiation parameters for better coverage
+- [ ] Test different boredom threshold values (currently 0.001)
+- [ ] Analyze trajectory efficiency - distance traveled vs area covered
 
 ---
 

@@ -116,6 +116,7 @@ class SparkNetExplorer(nn.Module):
             'novelty_reward': [],
             'curiosity_reward': [],
             'homeostatic_penalty': [],
+            'boredom_penalty': [],  # Track boredom penalty
             'total_reward': [],
             'exploration_rate': [],
             'stress_factor': [],  # Track homeostatic stress
@@ -244,11 +245,25 @@ class SparkNetExplorer(nn.Module):
             self.prediction_error_weight * curiosity_reward
         )
 
+        # SOLUTION 3: Low-curiosity penalty (boredom penalty)
+        # When curiosity (prediction error) is too low → agent is bored → penalize
+        # This prevents settling into predictable states (like corners)
+        boredom_threshold = 0.001  # Curiosity below this = bored
+        curiosity_value = curiosity_reward.item() if isinstance(curiosity_reward, torch.Tensor) else curiosity_reward
+
+        if curiosity_value < boredom_threshold:
+            # Strong penalty for being too comfortable/predictable
+            boredom_penalty = (boredom_threshold - curiosity_value) * 10.0
+            boredom_penalty_tensor = torch.tensor(boredom_penalty, device=self.device, dtype=torch.float32)
+        else:
+            boredom_penalty_tensor = torch.tensor(0.0, device=self.device, dtype=torch.float32)
+
         # TOTAL REWARD
         total_reward = (
             extrinsic_reward +
             adaptive_curiosity_weight * intrinsic_reward -
-            self.homeostasis_weight * homeostatic_penalty
+            self.homeostasis_weight * homeostatic_penalty -
+            boredom_penalty_tensor  # Subtract boredom penalty
         )
 
         # Track metrics
@@ -257,6 +272,7 @@ class SparkNetExplorer(nn.Module):
         self.metrics['novelty_reward'].append(novelty)
         self.metrics['curiosity_reward'].append(curiosity_reward.item() if isinstance(curiosity_reward, torch.Tensor) else curiosity_reward)
         self.metrics['homeostatic_penalty'].append(homeostatic_penalty.item())
+        self.metrics['boredom_penalty'].append(boredom_penalty_tensor.item())
         self.metrics['total_reward'].append(total_reward.item())
         self.metrics['exploration_rate'].append(self.exploration_rate)
         self.metrics['stress_factor'].append(stress_factor.item())
@@ -268,6 +284,7 @@ class SparkNetExplorer(nn.Module):
             'novelty': novelty,
             'curiosity': curiosity_reward.item() if isinstance(curiosity_reward, torch.Tensor) else curiosity_reward,
             'homeostatic_penalty': homeostatic_penalty.item(),
+            'boredom_penalty': boredom_penalty_tensor.item(),
             'num_violations': num_violations,
             'total_reward': total_reward.item(),
             'exploration_rate': self.exploration_rate,

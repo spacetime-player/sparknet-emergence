@@ -39,12 +39,12 @@ Mobile "sparks" traverse a neural network, strengthening connections as they mov
 Alternative architecture exploring emergent behavior through **intrinsic motivation**. Instead of manual sparks, uses triple reward system:
 - Extrinsic (task performance) + Intrinsic (curiosity + novelty) + Homeostatic (parameter stability)
 
-**Key Innovation:** Adaptive correlation between survival and exploration - homeostatic stress dynamically scales exploration drive, creating feedback loop where:
-- Network under stress → explores harder to find relief
-- Successful exploration → reduces stress → calms exploration
-- Creates reward synergy instead of competition
+**Key Innovations:**
+1. **Adaptive correlation** - Homeostatic stress scales exploration drive (survival ↔ exploration feedback loop)
+2. **Triple corner-breaking defense** - Spawn attractors + boundary noise + boredom penalty prevent convergence
+3. **Reward synergy** - Survival and exploration drives amplify each other instead of competing
 
-Agent explores 2D space driven by prediction errors and state novelty. Recent breakthrough: reward systems now cooperate and amplify each other.
+Agent explores 2D space driven by prediction errors and state novelty. **Recent breakthrough (Run 7):** Successfully broke corner trap - agent now explores entire space continuously.
 
 📊 **Experiment tracking:** See [EXPLORER_RUNS.md](EXPLORER_RUNS.md) for detailed run logs and findings.
 

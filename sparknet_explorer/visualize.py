@@ -38,10 +38,12 @@ def plot_training_metrics(metrics_history, save_path='sparknet_explorer_metrics.
         ax.plot(metrics_history['intrinsic'], label='Intrinsic', alpha=0.7, linewidth=1.5, color='#2196F3')
     if 'homeostatic' in metrics_history:
         ax.plot(metrics_history['homeostatic'], label='Homeostatic Penalty', alpha=0.7, linewidth=1.5, color='#F44336')
+    if 'boredom_penalty' in metrics_history:
+        ax.plot(metrics_history['boredom_penalty'], label='Boredom Penalty', alpha=0.7, linewidth=1.5, color='#FF6F00')
     ax.set_xlabel('Training Step', color='white')
     ax.set_ylabel('Reward/Penalty', color='white')
     ax.set_title('Reward Decomposition', color='white', fontweight='bold')
-    ax.legend(facecolor='#3e3e3e', edgecolor='white')
+    ax.legend(facecolor='#3e3e3e', edgecolor='white', fontsize=9)
     ax.grid(True, alpha=0.2, color='white')
     ax.tick_params(colors='white')
 
