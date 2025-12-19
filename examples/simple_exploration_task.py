@@ -231,12 +231,12 @@ def exploration_task(num_steps=5000, visualize_interval=500):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}\n")
 
-    # Initialize network
+    # Initialize network (2x larger than before)
     model = SparkNetExplorer(
         input_dim=2,  # 2D position
-        hidden_dims=[128, 256, 128],
+        hidden_dims=[256, 512, 256],  # Doubled: was [128, 256, 128]
         output_dim=2,  # 2D action (movement)
-        state_embedding_dim=32,
+        state_embedding_dim=64,  # Doubled: was 32
         curiosity_weight=0.8,  # Very high curiosity for exploration
         homeostasis_weight=0.005,  # Lower homeostasis for more freedom
         novelty_weight=0.7,  # Prioritize novelty

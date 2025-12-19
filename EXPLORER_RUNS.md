@@ -185,6 +185,36 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 5. **Adaptive correlation enables cooperation** - Stress-driven exploration creates reward synergy
 6. **Corner trap broken** - Triple defense prevents convergence to stable equilibrium
 7. **Emergent topology reproducible** - System self-organizes into 4-cluster state space architecture across different runs
+8. **Cluster count robust to network size** - 4-cluster pattern appears in both small (1200) and large (2400) networks; cluster positions vary but count stays constant
+
+## Run 9: 2x Larger Network Capacity (2025-12-18 22:28)
+**Config**: Doubled network size: [256, 512, 256] hidden dims + 64D embeddings (was [128, 256, 128] + 32D). Total ~2400 neurons vs ~1200 neurons.
+**Result**: Agent explores continuously - **4-cluster pattern emerges again, different configuration**
+**Observations**:
+- **4 clusters persistent** across network sizes - not artifact of small network
+- **Cluster topology different** from Runs 7-8 - suggests variation within stable attractor count
+- **Diversity stable** - 0.28 → 0.21 (similar to previous runs)
+- **21/22 parameters healthy** throughout - larger network maintains viability
+- **Positions vary** across space: [-0.62, 0.68] → [-0.96, 0.81] → [-0.93, 0.77]
+- Larger network didn't break 4-cluster organization - suggests fundamental constraint
+
+**Visualizations**:
+
+![Metrics](exploration_runs/exploration_metrics_2025-12-18_23-06-16.png)
+*Reward dynamics with 2x network - similar patterns to smaller network*
+
+![State Space](exploration_runs/exploration_state_space_2025-12-18_23-06-16.png)
+*Four clusters in different configuration - cluster count stable, positions vary*
+
+![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_23-06-16.png)
+*Continuous exploration maintained with larger network*
+
+**Data Links**:
+- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_22-28-34.md)
+
+**Discovery**: Four-cluster topology is **robust to network size changes** - appears across 1200-neuron and 2400-neuron networks. Cluster count seems fixed by reward landscape (4 attractors + boundary dynamics), but cluster positions/shapes vary between runs. Network capacity doesn't determine attractor count.
+
+---
 
 ## Next Steps
 
@@ -194,6 +224,7 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 - [x] Place attractors at spawn [0,0] (Run 7 - SUCCESS)
 - [x] Add boundary noise mechanism (Run 7 - SUCCESS)
 - [x] Implement boredom penalty (Run 7 - SUCCESS)
+- [x] Test larger network capacity (Run 9 - 4-cluster pattern robust)
 - [ ] Optimize attractor radius and satiation parameters for better coverage
 - [ ] Test different boredom threshold values (currently 0.001)
 - [ ] Analyze trajectory efficiency - distance traveled vs area covered
