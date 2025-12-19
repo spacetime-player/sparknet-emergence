@@ -100,9 +100,14 @@ def plot_training_metrics(metrics_history, save_path='sparknet_explorer_metrics.
 
     # Plot 6: Exploration rate decay
     ax = axes[1, 2]
-    if 'exploration_rate' in metrics_history:
-        ax.plot(metrics_history['exploration_rate'], alpha=0.7, color='#00BCD4', linewidth=1.5)
-        ax.set_ylim(0, 1)  # Fix y-axis range
+    if 'exploration_rate' in metrics_history and len(metrics_history['exploration_rate']) > 0:
+        rates = metrics_history['exploration_rate']
+        ax.plot(rates, alpha=0.7, color='#00BCD4', linewidth=1.5)
+        # Auto-scale to actual data range with small padding
+        min_rate = min(rates)
+        max_rate = max(rates)
+        padding = (max_rate - min_rate) * 0.1 if max_rate > min_rate else 0.1
+        ax.set_ylim(max(0, min_rate - padding), min(1, max_rate + padding))
     ax.set_xlabel('Training Step', color='white')
     ax.set_ylabel('Exploration Rate', color='white')
     ax.set_title('Exploration Rate Decay', color='white', fontweight='bold')
