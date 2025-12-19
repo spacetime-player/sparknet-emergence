@@ -442,7 +442,7 @@ def plot_trajectory(positions, save_path='exploration_trajectory.png'):
 
 if __name__ == "__main__":
     # Run exploration task
-    model, history = exploration_task(num_steps=5000, visualize_interval=500)
+    model, history = exploration_task(num_steps=20000, visualize_interval=1000)
 
     # Save model
     model.save('exploration_model.pt')

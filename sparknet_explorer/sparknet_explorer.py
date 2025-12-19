@@ -118,6 +118,8 @@ class SparkNetExplorer(nn.Module):
             'homeostatic_penalty': [],
             'total_reward': [],
             'exploration_rate': [],
+            'stress_factor': [],  # Track homeostatic stress
+            'adaptive_curiosity_weight': [],  # Track dynamic weight
         }
 
         self.to(self.device)
@@ -226,10 +228,26 @@ class SparkNetExplorer(nn.Module):
         # Update homeostasis ranges if in adaptation period
         self.homeostasis.update_desirable_ranges()
 
+        # ADAPTIVE CORRELATION: Stress drives exploration, exploration relieves stress
+        # Normalize homeostatic penalty to [0, 1] range for scaling
+        max_expected_penalty = 1.0  # Typical max observed penalty
+        stress_factor = torch.clamp(homeostatic_penalty / max_expected_penalty, 0.0, 2.0)
+
+        # When stressed → increase exploration drive to find relief
+        # When healthy → reduce exploration urgency
+        adaptive_curiosity_weight = self.curiosity_weight * (1.0 + stress_factor * 0.5)
+        adaptive_novelty_weight = self.novelty_weight * (1.0 + stress_factor * 0.5)
+
+        # Recalculate intrinsic reward with adaptive weights
+        intrinsic_reward = (
+            adaptive_novelty_weight * novelty_tensor +
+            self.prediction_error_weight * curiosity_reward
+        )
+
         # TOTAL REWARD
         total_reward = (
             extrinsic_reward +
-            self.curiosity_weight * intrinsic_reward -
+            adaptive_curiosity_weight * intrinsic_reward -
             self.homeostasis_weight * homeostatic_penalty
         )
 
@@ -241,6 +259,8 @@ class SparkNetExplorer(nn.Module):
         self.metrics['homeostatic_penalty'].append(homeostatic_penalty.item())
         self.metrics['total_reward'].append(total_reward.item())
         self.metrics['exploration_rate'].append(self.exploration_rate)
+        self.metrics['stress_factor'].append(stress_factor.item())
+        self.metrics['adaptive_curiosity_weight'].append(adaptive_curiosity_weight.item())
 
         metrics_dict = {
             'extrinsic': extrinsic_reward.item(),

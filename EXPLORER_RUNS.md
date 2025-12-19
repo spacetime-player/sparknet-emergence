@@ -61,6 +61,24 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 
 ---
 
+## Run 5: Adaptive Survival-Exploration Correlation (2025-12-18 17:29)
+**Config**: Implemented dynamic feedback loop - homeostatic stress scales curiosity/novelty weights. Stress → 2x exploration boost. Logging system activated.
+**Result**: Agent stuck at corner [-1.0, 1.0] but system dynamics TRANSFORMED
+**Observations**:
+- **Homeostatic penalty 10x higher** (sustained ~2.0 vs previous ~0.1) - system under active stress
+- **Total reward > Intrinsic** for first time - rewards synergizing instead of competing
+- **Adaptive correlation working** but corner still too attractive to overcome
+- State embeddings more scattered - increased internal diversity
+- Terminal log auto-saved successfully
+
+**Data**:
+- Screenshots: [Metrics](exploration_runs/exploration_metrics_2025-12-18_17-33-29.png) | [State Space](exploration_runs/exploration_state_space_2025-12-18_17-33-29.png) | [Trajectory](exploration_runs/exploration_trajectory_2025-12-18_17-33-29.png)
+- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_17-29-01.md)
+
+**Breakthrough**: First evidence of **reward system cooperation** - survival and exploration drives amplifying each other rather than competing. Internal dynamics improved even though spatial exploration unchanged.
+
+---
+
 ## Key Learnings So Far
 
 1. **Boundary penalties alone insufficient** - Agent finds corners attractive despite penalties
@@ -68,14 +86,18 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 3. **Attractor placement critical** - Must be reachable from spawn point
 4. **Exploration vs exploitation** - Need stronger initial exploration to discover reward landscape
 5. **State embedding paradox** - Internal representations diverse while physical position stuck
+6. **Adaptive correlation breakthrough** - Stress-driven exploration creates reward synergy; internal dynamics can improve independently of spatial behavior
+7. **Corner stability problem** - Corners are stable attractors for network even under stress; need fundamentally different approach to break free
 
 ## Next Steps
 
+- [x] Implement adaptive survival-exploration correlation (Run 5 - SUCCESS: reward synergy achieved)
+- [x] Add terminal output logging system (Run 5 - SUCCESS: auto-saves to logs/)
+- [ ] Run 20k step experiment to test long-term adaptive dynamics
 - [ ] Place attractors closer to spawn point [0, 0]
-- [ ] Add initial exploration phase before exploitation
-- [ ] Visualize attractor positions on trajectory plot
-- [ ] Test higher initial exploration rate (50%+)
-- [ ] Consider repulsive force from corners instead of just penalty
+- [ ] Strengthen stress-exploration multiplier (currently 0.5x, try 2-5x)
+- [ ] Add escape mechanism: strong random kick when homeostatic penalty exceeds threshold
+- [ ] Test initial exploration phase before exploitation kicks in
 
 ---
 
