@@ -36,23 +36,43 @@ class ContinuousExplorationEnvironment:
     Agent starts at origin and can move in any direction.
     """
 
-    def __init__(self, bounds=(-1, 1), dt=0.1):
+    def __init__(self, bounds=(-1, 1), dt=0.1, num_attractors=4):
         """
         Initialize environment.
 
         Args:
             bounds: Tuple of (min, max) for both x and y
             dt: Time step for movement
+            num_attractors: Number of temporary reward zones
         """
         self.bounds = bounds
         self.dt = dt
         self.position = torch.tensor([0.0, 0.0])
         self.trajectory = [self.position.clone().numpy()]
 
+        # Dynamic attractors (reward zones that shift)
+        self.num_attractors = num_attractors
+        self.attractors = []
+        self.attractor_lifetimes = []
+        self.time_in_zone = {}
+        self.step_count = 0
+        self._init_attractors()
+
+    def _init_attractors(self):
+        """Initialize attractor positions randomly in safe zones."""
+        for i in range(self.num_attractors):
+            # Place attractors away from edges
+            pos = torch.rand(2) * 1.2 - 0.6  # Range [-0.6, 0.6]
+            self.attractors.append(pos)
+            self.attractor_lifetimes.append(0)
+            self.time_in_zone[i] = 0
+
     def reset(self):
         """Reset to origin."""
         self.position = torch.tensor([0.0, 0.0])
         self.trajectory = [self.position.clone().numpy()]
+        self.time_in_zone = {i: 0 for i in range(self.num_attractors)}
+        self.step_count = 0
         return self.position.clone()
 
     def step(self, action):
@@ -68,16 +88,16 @@ class ContinuousExplorationEnvironment:
         # Move based on action
         self.position = self.position + action.squeeze() * self.dt
 
-        # Boundary penalty (quadratic gradient pushing away from edges)
+        self.step_count += 1
+
+        # 1. Boundary penalty (stronger push away from edges)
         boundary_penalty = 0.0
-        margin = 0.2  # Start penalty when within 0.2 of boundary
+        margin = 0.3  # Larger safety margin
 
         for i in range(2):  # x and y
-            # Distance from edges
             dist_from_max = self.bounds[1] - self.position[i]
             dist_from_min = self.position[i] - self.bounds[0]
 
-            # Quadratic penalty if too close to boundary
             if dist_from_max < margin:
                 boundary_penalty += (margin - dist_from_max) ** 2
             if dist_from_min < margin:
@@ -87,16 +107,47 @@ class ContinuousExplorationEnvironment:
         self.position = torch.clamp(self.position,
                                      self.bounds[0], self.bounds[1])
 
+        # 2. Attractor rewards (with satiation)
+        attractor_reward = 0.0
+        attractor_zone_radius = 0.25
+
+        for i, attractor_pos in enumerate(self.attractors):
+            dist_to_attractor = torch.norm(self.position - attractor_pos).item()
+
+            if dist_to_attractor < attractor_zone_radius:
+                # Inside attractor zone
+                self.time_in_zone[i] += 1
+
+                # Satiation: reward decreases with time spent in zone
+                satiation_factor = np.exp(-self.time_in_zone[i] / 50.0)  # Decay over 50 steps
+                zone_reward = (1.0 - dist_to_attractor / attractor_zone_radius) * satiation_factor
+                attractor_reward += zone_reward
+
+                # Rotate attractor if overstayed (force exploration)
+                if self.time_in_zone[i] > 100:
+                    self.attractors[i] = torch.rand(2) * 1.2 - 0.6
+                    self.time_in_zone[i] = 0
+            else:
+                # Reset satiation when leaving zone
+                self.time_in_zone[i] = max(0, self.time_in_zone[i] - 1)
+
+            # Slowly drift attractors (every 200 steps)
+            self.attractor_lifetimes[i] += 1
+            if self.attractor_lifetimes[i] > 200:
+                self.attractors[i] = torch.rand(2) * 1.2 - 0.6
+                self.attractor_lifetimes[i] = 0
+
         # Track trajectory
         self.trajectory.append(self.position.clone().numpy())
 
-        # Reward: distance from origin MINUS boundary penalty
-        reward = torch.norm(self.position).item() - boundary_penalty * 2.0
+        # Total reward = attractors - boundary penalty
+        reward = attractor_reward - boundary_penalty * 5.0  # Stronger boundary penalty
 
         done = False
         info = {
             'position': self.position.clone(),
-            'boundary_penalty': boundary_penalty
+            'boundary_penalty': boundary_penalty,
+            'attractor_reward': attractor_reward
         }
 
         return self.position.clone(), reward, done, info
@@ -117,11 +168,37 @@ def exploration_task(num_steps=5000, visualize_interval=500):
     Returns:
         Trained model
     """
+    # Setup output capture
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    log_dir = 'exploration_runs/logs'
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, f'run_log_{timestamp}.md')
+
+    # Capture output to both terminal and file
+    import sys
+    class TeeOutput:
+        def __init__(self, file_path):
+            self.terminal = sys.stdout
+            self.log = open(file_path, 'w', encoding='utf-8')
+        def write(self, message):
+            self.terminal.write(message)
+            self.log.write(message)
+        def flush(self):
+            self.terminal.flush()
+            self.log.flush()
+        def close(self):
+            self.log.close()
+
+    tee = TeeOutput(log_file)
+    sys.stdout = tee
+
     print("\n" + "="*80)
     print("SPARKNET EXPLORER - CONTINUOUS EXPLORATION TASK")
     print("="*80)
     print("Goal: Explore 2D space driven by curiosity and novelty")
     print("="*80 + "\n")
+    print(f"Run timestamp: {timestamp}")
+    print(f"Log file: {log_file}\n")
 
     # Initialize environment
     env = ContinuousExplorationEnvironment(bounds=(-1, 1), dt=0.1)
@@ -288,6 +365,11 @@ def exploration_task(num_steps=5000, visualize_interval=500):
     print(f"\nVisualization complete!")
     print(f"Latest versions: exploration_*.png")
     print(f"Archived versions: {archive_dir}/exploration_*_{timestamp}.png")
+
+    # Close log file and restore stdout
+    print(f"\nLog saved to: {log_file}")
+    tee.close()
+    sys.stdout = tee.terminal
 
     return model, metrics_history
 

@@ -31,7 +31,17 @@ Mobile "sparks" traverse a neural network, strengthening connections as they mov
 
 ## Repository Structure
 - **sparknet_alpha.py** - Main version with interactive interface
+- **sparknet_explorer/** - New branch: curiosity-driven exploration architecture with intrinsic motivation
 - **old/** - Previous iterations (optional, for exploring early approaches)
+
+### SparkNet Explorer
+
+Alternative architecture exploring emergent behavior through **intrinsic motivation**. Instead of manual sparks, uses triple reward system:
+- Extrinsic (task performance) + Intrinsic (curiosity + novelty) + Homeostatic (parameter stability)
+
+Agent explores 2D space driven by prediction errors and state novelty. Still investigating emergent exploratory behavior.
+
+📊 **Experiment tracking:** See [EXPLORER_RUNS.md](EXPLORER_RUNS.md) for detailed run logs and findings.
 
 ## Key Findings
 
