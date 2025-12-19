@@ -89,6 +89,35 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 
 ---
 
+## Run 6: Long-Term Adaptive Dynamics (2025-12-18 18:19)
+**Config**: 20,000 steps (4x longer) to test convergence behavior with adaptive correlation active.
+**Result**: Agent stuck at corner [1.0, 1.0] - **confirmed stable attractor**
+**Observations**:
+- **Exploration rate collapsed**: 0.25 → 0.0055 (nearly zero by end)
+- **Diversity collapsed**: 0.30 → 0.06 (network converging to fixed point)
+- **Curiosity dead**: 0.0000 (perfect predictions = no surprise = no drive)
+- **Novelty dying**: 0.05 → 0.008 (everything became familiar)
+- **21/22 parameters healthy** throughout - corner IS a healthy state
+- System reached **true equilibrium** - not temporary behavior
+
+**Visualizations**:
+
+![Metrics](exploration_runs/exploration_metrics_2025-12-18_18-56-10.png)
+*Long-term convergence showing exploration rate decay to near-zero and reward stabilization*
+
+![State Space](exploration_runs/exploration_state_space_2025-12-18_18-56-10.png)
+*State embeddings showing convergence - diversity collapse from 0.30 to 0.06*
+
+![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_18-56-10.png)
+*20k steps at same corner [1, 1] - confirmed stable attractor, not transient state*
+
+**Data Links**:
+- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_18-19-34.md)
+
+**Critical Discovery**: Corner is a **true stable equilibrium**, not temporary. System converges and stays forever. Adaptive correlation insufficient to escape - need fundamentally different mechanism (forced perturbations, attractor placement at spawn, or escape threshold).
+
+---
+
 ## Key Learnings So Far
 
 1. **Boundary penalties alone insufficient** - Agent finds corners attractive despite penalties
