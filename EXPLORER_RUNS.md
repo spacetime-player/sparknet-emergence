@@ -71,8 +71,18 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 - State embeddings more scattered - increased internal diversity
 - Terminal log auto-saved successfully
 
-**Data**:
-- Screenshots: [Metrics](exploration_runs/exploration_metrics_2025-12-18_17-33-29.png) | [State Space](exploration_runs/exploration_state_space_2025-12-18_17-33-29.png) | [Trajectory](exploration_runs/exploration_trajectory_2025-12-18_17-33-29.png)
+**Visualizations**:
+
+![Metrics](exploration_runs/exploration_metrics_2025-12-18_17-33-29.png)
+*Reward decomposition showing homeostatic penalty spike (~2.0) and total reward exceeding intrinsic for first time*
+
+![State Space](exploration_runs/exploration_state_space_2025-12-18_17-33-29.png)
+*State embeddings showing increased scatter and temporal progression from purple (early) to yellow (late)*
+
+![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_17-33-29.png)
+*Physical trajectory stuck at corner [-1, 1] despite internal diversity*
+
+**Data Links**:
 - Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_17-29-01.md)
 
 **Breakthrough**: First evidence of **reward system cooperation** - survival and exploration drives amplifying each other rather than competing. Internal dynamics improved even though spatial exploration unchanged.
