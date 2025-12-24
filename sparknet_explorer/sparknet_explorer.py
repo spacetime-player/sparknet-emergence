@@ -35,6 +35,11 @@ class SparkNetExplorer(nn.Module):
         homeostasis_weight=0.01,
         novelty_weight=0.5,
         prediction_error_weight=0.5,
+<<<<<<< HEAD
+        weight_exploration_weight=0.05,
+        contrastive_weight=0.01,
+=======
+>>>>>>> parent of 959ce18 (explorer major update)
         device=None
     ):
         """

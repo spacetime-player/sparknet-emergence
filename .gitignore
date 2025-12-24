@@ -1,2 +1,5 @@
 .clinerules
 DaItE.txt
+
+# Exploration run timelines (large binary files)
+exploration_runs/timelines/
