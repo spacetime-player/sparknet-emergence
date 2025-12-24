@@ -87,7 +87,28 @@ homeostasis = HomeostasisMonitor(model, adaptation_period=1000)
 penalty, violations = homeostasis.compute_penalty()
 ```
 
-#### 4. SparkNetExplorer
+#### 4. ContrastiveEmbedderLoss
+Teaches embedder meaningful representations via contrastive learning.
+
+```python
+from sparknet_explorer.modules import ContrastiveEmbedderLoss
+
+contrastive_loss = ContrastiveEmbedderLoss(temperature=0.1, margin=0.5, buffer_size=256)
+loss = contrastive_loss.compute_loss(current_position, current_embedding)
+contrastive_loss.add_sample(current_position, current_embedding.detach())
+```
+
+#### 5. WeightExplorer
+Encourages exploration of weight space to prevent convergence to local minima.
+
+```python
+from sparknet_explorer.modules import WeightExplorer
+
+weight_explorer = WeightExplorer(model)
+penalty = weight_explorer.compute_penalty()
+```
+
+#### 6. SparkNetExplorer
 Main architecture combining all components.
 
 ```python
@@ -98,7 +119,8 @@ model = SparkNetExplorer(
     hidden_dims=[256, 512, 256],
     output_dim=10,
     curiosity_weight=0.1,
-    homeostasis_weight=0.01
+    homeostasis_weight=0.01,
+    contrastive_weight=0.01  # Embedder learning
 )
 
 total_reward, metrics = model.compute_total_reward(x, y, next_x)
@@ -147,6 +169,8 @@ create_comprehensive_report(trained_model, metrics)
 |-----------|---------|-------|-------------|
 | `curiosity_weight` | 0.1 | 0.01-1.0 | Balance between task and exploration |
 | `homeostasis_weight` | 0.01 | 0.001-0.1 | Strength of stability penalty |
+| `contrastive_weight` | 0.01 | 0.001-0.1 | Embedder learning strength |
+| `weight_exploration_weight` | 0.05 | 0.01-0.2 | Weight-space exploration penalty |
 | `novelty_weight` | 0.5 | 0.0-1.0 | Weight for novelty in intrinsic reward |
 | `prediction_error_weight` | 0.5 | 0.0-1.0 | Weight for curiosity in intrinsic reward |
 | `exploration_rate` | 0.1 | 0.05-0.5 | Initial random exploration probability |
@@ -259,28 +283,42 @@ P_homeostatic = Σ_layers Σ_weights max(0, |w| - threshold)²
 sparknet_explorer/
 ├── __init__.py
 ├── sparknet_explorer.py       # Main architecture
-├── train_explorer.py           # Training loop
-├── visualize.py                # Visualization suite
+├── train_explorer.py          # Training loop
+├── visualize.py               # Visualization suite
+├── live_interface.py          # Matplotlib live visualization
+├── live_interface_qt.py       # PyQt5 real-time visualization
+├── simulation_controller.py   # Run management and timeline recording
+├── timeline_browser.py        # Replay past exploration runs
 ├── core/
 │   ├── __init__.py
-│   └── experience_buffer.py    # Novelty detection
+│   └── experience_buffer.py   # Novelty detection
 ├── modules/
 │   ├── __init__.py
-│   ├── curiosity_module.py     # Intrinsic motivation
-│   └── homeostasis.py          # Parameter health
+│   ├── curiosity_module.py    # Intrinsic motivation
+│   ├── homeostasis.py         # Parameter health
+│   ├── contrastive_embedder.py # Embedder learning via contrastive loss
+│   └── weight_explorer.py     # Weight-space exploration penalties
 └── tests/
     ├── __init__.py
-    └── test_curiosity.py       # Unit tests
+    └── test_curiosity.py      # Unit tests
 ```
 
 ## Examples
 
-See `examples/simple_exploration_task.py` for a complete demonstration of:
+See `examples/` for demonstrations:
+
+- **`simple_exploration_task.py`** - Basic 2D exploration with visualization
+- **`live_exploration_qt.py`** - Real-time PyQt5 visualization with spring graphs
+- **`sparknet_app.py`** - Full application with timeline recording and replay
+
+Features demonstrated:
 - 2D continuous space exploration
 - Emergent exploratory behavior
 - Novelty-driven movement
 - Homeostatic stability
-- Comprehensive visualization
+- Contrastive embedder learning
+- Spring-graph weight visualization
+- Timeline recording and replay
 
 ## Research Context
 

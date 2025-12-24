@@ -43,8 +43,10 @@ Alternative architecture exploring emergent behavior through **intrinsic motivat
 1. **Adaptive correlation** - Homeostatic stress scales exploration drive (survival ↔ exploration feedback loop)
 2. **Triple corner-breaking defense** - Spawn attractors + boundary noise + boredom penalty prevent convergence
 3. **Reward synergy** - Survival and exploration drives amplify each other instead of competing
+4. **Contrastive embedder learning** - Embedder learns spatial structure via contrastive loss (similar positions → similar embeddings)
+5. **Live visualization** - Real-time PyQt5 interface with spring-graph weight visualization and timeline replay
 
-Agent explores 2D space driven by prediction errors and state novelty. **Recent breakthrough (Run 7):** Successfully broke corner trap - agent now explores entire space continuously.
+Agent explores 2D space driven by prediction errors and state novelty. **Recent breakthrough (Run 18-19):** Embedder now learns meaningful representations via contrastive loss - weights adapt during training instead of remaining frozen.
 
 📊 **Experiment tracking:** See [EXPLORER_RUNS.md](EXPLORER_RUNS.md) for detailed run logs and findings.
 

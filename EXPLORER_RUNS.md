@@ -13,7 +13,7 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 - Homeostasis stable (21/22 parameters healthy)
 
 **Data**:
-- Screenshots: [Metrics](exploration_runs/exploration_metrics_2025-12-18_01-46-05.png)
+- Screenshots: [Metrics](exploration_runs/Run_01_metrics_2025-12-18_01-46-05.png)
 - Terminal Log: _(not saved - logging added in later runs)_
 
 ---
@@ -27,7 +27,7 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 - State embeddings diverse but physical position clustered
 
 **Data**:
-- Screenshots: [Metrics](exploration_runs/exploration_metrics_2025-12-18_02-00-31.png) | [State Space](exploration_runs/exploration_state_space_2025-12-18_02-00-31.png) | [Trajectory](exploration_runs/exploration_trajectory_2025-12-18_02-00-31.png)
+- Screenshots: [Metrics](exploration_runs/Run_02_metrics_2025-12-18_02-00-31.png) | [State Space](exploration_runs/Run_02_state_space_2025-12-18_02-00-31.png) | [Trajectory](exploration_runs/Run_02_trajectory_2025-12-18_02-00-31.png)
 - Terminal Log: _(not saved)_
 
 ---
@@ -41,7 +41,7 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 - Agent preferred corner despite negative net reward
 
 **Data**:
-- Screenshots: [Metrics](exploration_runs/exploration_metrics_2025-12-18_02-22-59.png) | [State Space](exploration_runs/exploration_state_space_2025-12-18_02-22-59.png) | [Trajectory](exploration_runs/exploration_trajectory_2025-12-18_02-22-59.png)
+- Screenshots: [Metrics](exploration_runs/Run_03_metrics_2025-12-18_02-22-59.png) | [State Space](exploration_runs/Run_03_state_space_2025-12-18_02-22-59.png) | [Trajectory](exploration_runs/Run_03_trajectory_2025-12-18_02-22-59.png)
 - Terminal Log: _(not saved)_
 
 ---
@@ -56,7 +56,7 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 - Homeostasis perfect (22/22 healthy)
 
 **Data**:
-- Screenshots: [Metrics](exploration_runs/exploration_metrics_2025-12-18_15-40-37.png) | [State Space](exploration_runs/exploration_state_space_2025-12-18_15-40-37.png) | [Trajectory](exploration_runs/exploration_trajectory_2025-12-18_15-40-37.png)
+- Screenshots: [Metrics](exploration_runs/Run_04_metrics_2025-12-18_15-40-37.png) | [State Space](exploration_runs/Run_04_state_space_2025-12-18_15-40-37.png) | [Trajectory](exploration_runs/Run_04_trajectory_2025-12-18_15-40-37.png)
 - Terminal Log: _(not saved - logging system added after this run)_
 
 ---
@@ -73,17 +73,17 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 
 **Visualizations**:
 
-![Metrics](exploration_runs/exploration_metrics_2025-12-18_17-33-29.png)
+![Metrics](exploration_runs/Run_05_metrics_2025-12-18_17-33-29.png)
 *Reward decomposition showing homeostatic penalty spike (~2.0) and total reward exceeding intrinsic for first time*
 
-![State Space](exploration_runs/exploration_state_space_2025-12-18_17-33-29.png)
+![State Space](exploration_runs/Run_05_state_space_2025-12-18_17-33-29.png)
 *State embeddings showing increased scatter and temporal progression from purple (early) to yellow (late)*
 
-![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_17-33-29.png)
+![Trajectory](exploration_runs/Run_05_trajectory_2025-12-18_17-33-29.png)
 *Physical trajectory stuck at corner [-1, 1] despite internal diversity*
 
 **Data Links**:
-- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_17-29-01.md)
+- Terminal Log: [Full Output](exploration_runs/logs/Run_05_log_2025-12-18_17-29-01.md)
 
 **Breakthrough**: First evidence of **reward system cooperation** - survival and exploration drives amplifying each other rather than competing. Internal dynamics improved even though spatial exploration unchanged.
 
@@ -102,17 +102,17 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 
 **Visualizations**:
 
-![Metrics](exploration_runs/exploration_metrics_2025-12-18_18-56-10.png)
+![Metrics](exploration_runs/Run_06_metrics_2025-12-18_18-56-10.png)
 *Long-term convergence showing exploration rate decay to near-zero and reward stabilization*
 
-![State Space](exploration_runs/exploration_state_space_2025-12-18_18-56-10.png)
+![State Space](exploration_runs/Run_06_state_space_2025-12-18_18-56-10.png)
 *State embeddings showing convergence - diversity collapse from 0.30 to 0.06*
 
-![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_18-56-10.png)
+![Trajectory](exploration_runs/Run_06_trajectory_2025-12-18_18-56-10.png)
 *20k steps at same corner [1, 1] - confirmed stable attractor, not transient state*
 
 **Data Links**:
-- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_18-19-34.md)
+- Terminal Log: [Full Output](exploration_runs/logs/Run_06_log_2025-12-18_18-19-34.md)
 
 **Critical Discovery**: Corner is a **true stable equilibrium**, not temporary. System converges and stays forever. Adaptive correlation insufficient to escape - need fundamentally different mechanism (forced perturbations, attractor placement at spawn, or escape threshold).
 
@@ -131,17 +131,17 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 
 **Visualizations**:
 
-![Metrics](exploration_runs/exploration_metrics_2025-12-18_20-36-50.png)
+![Metrics](exploration_runs/Run_07_metrics_2025-12-18_20-36-50.png)
 *Reward dynamics showing sustained activity - boredom penalty (orange) prevents collapse*
 
-![State Space](exploration_runs/exploration_state_space_2025-12-18_20-36-50.png)
+![State Space](exploration_runs/Run_07_state_space_2025-12-18_20-36-50.png)
 *State embedding diversity maintained - no convergence to fixed point*
 
-![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_20-36-50.png)
+![Trajectory](exploration_runs/Run_07_trajectory_2025-12-18_20-36-50.png)
 *Physical trajectory showing movement across all quadrants - CORNER TRAP BROKEN*
 
 **Data Links**:
-- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_19-58-31.md)
+- Terminal Log: [Full Output](exploration_runs/logs/Run_07_log_2025-12-18_19-58-31.md)
 
 **Major Breakthrough**: Triple defense successfully breaks corner convergence. System now explores continuously instead of settling into stable attractor. Next: optimize parameters to maximize coverage efficiency.
 
@@ -160,17 +160,17 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 
 **Visualizations**:
 
-![Metrics](exploration_runs/exploration_metrics_2025-12-18_21-36-55.png)
+![Metrics](exploration_runs/Run_08_metrics_2025-12-18_21-36-55.png)
 *Reward dynamics consistent with Run 7 - boredom penalty maintains exploration*
 
-![State Space](exploration_runs/exploration_state_space_2025-12-18_21-36-55.png)
+![State Space](exploration_runs/Run_08_state_space_2025-12-18_21-36-55.png)
 *Four-cluster pattern identical to Run 7 - reproducible emergent structure in PCA space*
 
-![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_21-36-55.png)
+![Trajectory](exploration_runs/Run_08_trajectory_2025-12-18_21-36-55.png)
 *Continuous exploration across all quadrants - no corner convergence*
 
 **Data Links**:
-- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_20-56-04.md)
+- Terminal Log: [Full Output](exploration_runs/logs/Run_08_log_2025-12-18_20-56-04.md)
 
 **Discovery**: System discovers **same state space architecture** across runs. Four-cluster topology is not random artifact but **stable emergent organization** created by interaction of spawn attractors (1 center + 3 ring) and boundary dynamics. Network self-organizes into this structure regardless of initialization.
 
@@ -186,6 +186,7 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 6. **Corner trap broken** - Triple defense prevents convergence to stable equilibrium
 7. **Emergent topology reproducible** - System self-organizes into 4-cluster state space architecture across different runs
 8. **Cluster count robust to network size** - 4-cluster pattern appears in both small (1200) and large (2400) networks; cluster positions vary but count stays constant
+9. **Contrastive learning enables embedder adaptation** - Without explicit gradient signal, embedder weights freeze; contrastive loss teaches spatial relationships
 
 ## Run 9: 2x Larger Network Capacity (2025-12-18 22:28)
 **Config**: Doubled network size: [256, 512, 256] hidden dims + 64D embeddings (was [128, 256, 128] + 32D). Total ~2400 neurons vs ~1200 neurons.
@@ -200,19 +201,118 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 
 **Visualizations**:
 
-![Metrics](exploration_runs/exploration_metrics_2025-12-18_23-06-16.png)
+![Metrics](exploration_runs/Run_09_metrics_2025-12-18_23-06-16.png)
 *Reward dynamics with 2x network - similar patterns to smaller network*
 
-![State Space](exploration_runs/exploration_state_space_2025-12-18_23-06-16.png)
+![State Space](exploration_runs/Run_09_state_space_2025-12-18_23-06-16.png)
 *Four clusters in different configuration - cluster count stable, positions vary*
 
-![Trajectory](exploration_runs/exploration_trajectory_2025-12-18_23-06-16.png)
+![Trajectory](exploration_runs/Run_09_trajectory_2025-12-18_23-06-16.png)
 *Continuous exploration maintained with larger network*
 
 **Data Links**:
-- Terminal Log: [Full Output](exploration_runs/logs/run_log_2025-12-18_22-28-34.md)
+- Terminal Log: [Full Output](exploration_runs/logs/Run_09_log_2025-12-18_22-28-34.md)
 
 **Discovery**: Four-cluster topology is **robust to network size changes** - appears across 1200-neuron and 2400-neuron networks. Cluster count seems fixed by reward landscape (4 attractors + boundary dynamics), but cluster positions/shapes vary between runs. Network capacity doesn't determine attractor count.
+
+---
+
+## Run 10: Extended Run with Live Visualization (2025-12-19 03:24)
+**Config**: 20k steps with new live visualization interface, same triple defense system
+**Result**: Continuous exploration maintained, testing new visualization tools
+
+**Visualizations**:
+
+![Metrics](exploration_runs/Run_10_metrics_2025-12-19_04-03-28.png)
+
+![State Space](exploration_runs/Run_10_state_space_2025-12-19_04-03-28.png)
+
+![Trajectory](exploration_runs/Run_10_trajectory_2025-12-19_04-03-28.png)
+
+**Data Links**:
+- Terminal Log: [Full Output](exploration_runs/logs/Run_10_log_2025-12-19_03-24-44.md)
+
+---
+
+## Run 11: PyQt5 Live Interface Test (2025-12-20 21:50)
+**Config**: Testing new PyQt5-based live visualization with real-time spring graphs
+**Result**: System stable with new visualization overhead
+
+**Visualizations**:
+
+![Metrics](exploration_runs/Run_11_metrics_2025-12-20_21-50-39.png)
+
+![State Space](exploration_runs/Run_11_state_space_2025-12-20_21-50-39.png)
+
+![Trajectory](exploration_runs/Run_11_trajectory_2025-12-20_21-50-39.png)
+
+**Data Links**:
+- Terminal Log: [Full Output](exploration_runs/logs/Run_11_log_2025-12-20_21-50-39.md)
+
+---
+
+## Run 12-15: Architecture Refinement (2025-12-20 - 2025-12-21)
+**Config**: Various parameter adjustments testing different configurations
+**Result**: Continued exploration, preparing for contrastive learning integration
+
+**Run 12 Visualizations**:
+![Metrics](exploration_runs/Run_12_metrics_2025-12-20_23-35-57.png)
+![State Space](exploration_runs/Run_12_state_space_2025-12-20_23-35-57.png)
+![Trajectory](exploration_runs/Run_12_trajectory_2025-12-20_23-35-57.png)
+
+**Run 13 Visualizations**:
+![Metrics](exploration_runs/Run_13_metrics_2025-12-20_23-39-56.png)
+![State Space](exploration_runs/Run_13_state_space_2025-12-20_23-39-56.png)
+![Trajectory](exploration_runs/Run_13_trajectory_2025-12-20_23-39-56.png)
+
+**Run 14 Visualizations**:
+![Metrics](exploration_runs/Run_14_metrics_2025-12-20_23-48-43.png)
+![State Space](exploration_runs/Run_14_state_space_2025-12-20_23-48-43.png)
+![Trajectory](exploration_runs/Run_14_trajectory_2025-12-20_23-48-43.png)
+
+**Run 15 Visualizations**:
+![Metrics](exploration_runs/Run_15_metrics_2025-12-21_00-04-43.png)
+![State Space](exploration_runs/Run_15_state_space_2025-12-21_00-04-43.png)
+![Trajectory](exploration_runs/Run_15_trajectory_2025-12-21_00-04-43.png)
+
+---
+
+## Run 16-17: Pre-Contrastive Baseline (2025-12-23)
+**Config**: Final runs before contrastive embedder integration
+**Result**: Baseline performance established for comparison
+
+**Run 16 Visualizations**:
+![Metrics](exploration_runs/Run_16_metrics_2025-12-23_02-52-45.png)
+![State Space](exploration_runs/Run_16_state_space_2025-12-23_02-52-45.png)
+![Trajectory](exploration_runs/Run_16_trajectory_2025-12-23_02-52-45.png)
+
+**Run 17 Visualizations**:
+![Metrics](exploration_runs/Run_17_metrics_2025-12-23_15-41-10.png)
+![State Space](exploration_runs/Run_17_state_space_2025-12-23_15-41-10.png)
+![Trajectory](exploration_runs/Run_17_trajectory_2025-12-23_15-41-10.png)
+
+---
+
+## Run 18-19: Contrastive Embedder Learning (2025-12-23)
+**Config**: Added ContrastiveEmbedderLoss module - embedder now learns meaningful representations via contrastive loss. Similar positions → similar embeddings, different positions → different embeddings.
+**Result**: Embedder weights now update during training (previously frozen due to gradient blockers)
+
+**Key Changes**:
+- Added `contrastive_weight=0.01` parameter
+- Embedder learns to map spatial relationships to embedding space
+- Weight change per 100 steps: ~0.004 (previously 0)
+
+**Run 18 Visualizations**:
+![Metrics](exploration_runs/Run_18_metrics_2025-12-23_19-23-14.png)
+![State Space](exploration_runs/Run_18_state_space_2025-12-23_19-23-14.png)
+![Trajectory](exploration_runs/Run_18_trajectory_2025-12-23_19-23-14.png)
+
+**Run 19 Visualizations**:
+![Metrics](exploration_runs/Run_19_metrics_2025-12-23_21-44-16.png)
+![State Space](exploration_runs/Run_19_state_space_2025-12-23_21-44-16.png)
+![Trajectory](exploration_runs/Run_19_trajectory_2025-12-23_21-44-16.png)
+
+**Discovery**: Contrastive learning enables embedder to learn spatial structure. Previously the embedder weights were frozen because `torch.no_grad()` blocked all gradient flow. Now the embedder receives learning signal and adapts its representations.
 
 ---
 
@@ -225,6 +325,9 @@ This document tracks each experimental run of the SparkNet Explorer system, docu
 - [x] Add boundary noise mechanism (Run 7 - SUCCESS)
 - [x] Implement boredom penalty (Run 7 - SUCCESS)
 - [x] Test larger network capacity (Run 9 - 4-cluster pattern robust)
+- [x] Add PyQt5 live visualization (Run 11 - SUCCESS)
+- [x] Implement ContrastiveEmbedderLoss for embedder learning (Run 18-19 - SUCCESS)
+- [ ] Optimize contrastive_weight for better reward balance
 - [ ] Optimize attractor radius and satiation parameters for better coverage
 - [ ] Test different boredom threshold values (currently 0.001)
 - [ ] Analyze trajectory efficiency - distance traveled vs area covered
